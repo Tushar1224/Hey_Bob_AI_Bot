@@ -1,25 +1,23 @@
 
-import time
-
 import speech_recognition as sr
-from time import ctime
-import time
-import os
-#from gtts import gTTS
-import audio_find as find
-from win32com.client import constants
-import win32com.client
-import training as tr
-from random import randrange
-value=0   
 
+import win32com.client
 
 def speak(audioString):
-    print("B: "+audioString)
+    print("Bob: "+audioString)
     speaker = win32com.client.Dispatch("SAPI.SpVoice")
     speaker.Speak(audioString)
-	
-	
+
+def check_device():
+    # Check for available audio devices
+    print("Available audio devices:")
+    for i, name in enumerate(sr.Microphone.list_microphone_names()):
+        # print("Microphone with name \"{1}\" found for `Microphone(device_index={0})`".format(i, name))
+        print(i," : ",name)
+
+    # Prompt user to select a device
+    device_index = int(input("Select the device index you want to use: "))
+    return device_index
     
 
 def recordAudio():
@@ -36,11 +34,10 @@ def recordAudio():
         r.phrase_threshold = 0.1  # minimum seconds of speaking audio before we consider the speaking audio a phrase - values below this are ignored (for filtering out clicks and pops)
         #r.non_speaking_duration = 0 # seconds of non-speaking audio to keep on both sides of the recording
 
-        r.adjust_for_ambient_noise(source,duration=1)
+        r.adjust_for_ambient_noise(source)
         print("Say something!")
-        speak("Say something!")
-        speak("Can you speak")
         audio = r.listen(source,phrase_time_limit=4)
+    
     data = ""
     try:
         print("Audio Recorded")
@@ -55,29 +52,3 @@ def recordAudio():
         print("Could not request results from Google Speech Recognition service; {0}".format(e))
         
     return data
-	
-def search_data(data):
-	if data:     
-		if "hi" in data or "hello" in data:
-			speak("hi how can i help you")
-		elif ('time now') in data or ('time please') in data or ('tell me the time') in data:
-			speak("now time is"+ctime())
-		elif "your name" in data :
-			speak("I am a robot") 
-		elif "dead" in data:
-			speak("no, i am just a machine")
-		elif "start tranning" in data or "train yourself" in data :
-			tr.tranning_start()	
-		else:
-			find.find_text(data)
-
-	   
-				
-       
-# initialization
-#time.sleep(2)
-speak("Welcome to machine world") 
-while 1:
-    data = recordAudio()
-    search_data(data)
-    	
